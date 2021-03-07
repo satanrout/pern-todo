@@ -11,6 +11,16 @@ app.use(cors());
 app.use(express.json());
 //ROUTES
 
+//test
+
+app.get("/", async (req, res) => {
+  try {
+    res.send("is it working?");
+  } catch (error) {
+    res.status(404).json(error);
+  }
+});
+
 //create a todo
 
 app.post("/todos", async (req, res) => {
