@@ -11,6 +11,9 @@ const devConfig = {
 
 const proConfig = {
   connectionString: process.env.DATABASE_URL, //HEROKU POSTGRES ADDON
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
 
 const pool = new Pool(
