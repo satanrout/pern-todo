@@ -15,7 +15,7 @@ const proConfig = {
   password: "b62d240146e1f451cb46c28ecee25c837c5bbcec978e2f30572ee6d5129c9e6b",
   host: "ec2-54-198-252-9.compute-1.amazonaws.com",
   port: 5432,
-  database: d9omar9qtf8alv,
+  database: "d9omar9qtf8alv",
 };
 
 const pool = new Pool(proConfig);
