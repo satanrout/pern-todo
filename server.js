@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db");
+const connectDB = require("./config/db");
+const Todo = require("./models/todoSchema");
 
 const app = express();
 
@@ -9,6 +10,10 @@ const port = process.env.PORT || 5000;
 //middleware
 app.use(cors());
 app.use(express.json());
+
+//database connection
+connectDB();
+
 //ROUTES
 
 //test
@@ -25,14 +30,14 @@ app.get("/", async (req, res) => {
 
 app.post("/todos", async (req, res) => {
   try {
-    const { description } = req.body;
-    const newTodo = await pool.query(
-      "INSERT INTO todo (description) VALUES($1) RETURNING *",
-      [description]
-    );
-    res.json(newTodo.rows[0]);
+    const { todo } = await req.body;
+    await console.log(req.body);
+    const newTodo = await new Todo({
+      todo: todo,
+    });
+    newTodo.save((err) => res.status(404).json(err));
   } catch (err) {
-    console.log(err.message);
+    res.status(404).json({ status: "failed", data: err });
   }
 });
 
@@ -40,10 +45,10 @@ app.post("/todos", async (req, res) => {
 
 app.get("/todos", async (req, res) => {
   try {
-    const allTodos = await pool.query("SELECT * FROM todo");
-    res.json(allTodos.rows);
-  } catch (err) {
-    console.log(err.message);
+    const allTodos = await Todo.find({});
+    res.status(200).json({ status: "success", data: allTodos });
+  } catch (error) {
+    res.status(404).json({ status: "failed", data: err });
   }
 });
 
@@ -52,10 +57,12 @@ app.get("/todos", async (req, res) => {
 app.get("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const todo = await pool.query("SELECT * FROM todo WHERE tid = $1", [id]);
-    res.json(todo.rows[0]);
+    const todo = await Todo.findById(id);
+    res
+      .status(200)
+      .json({ status: "success", data: "fetched task succesfuly" });
   } catch (err) {
-    console.log(err);
+    res.status(404).json({ status: "failed", data: err });
   }
 });
 
@@ -63,15 +70,14 @@ app.get("/todos/:id", async (req, res) => {
 
 app.put("/todos/:id", async (req, res) => {
   try {
-    const { description } = req.body;
+    const { todo } = req.body;
     const { id } = req.params;
-    const updateTodo = await pool.query(
-      "UPDATE todo SET description = $1 WHERE tid = $2",
-      [description, id]
-    );
-    res.json("todo was updated");
+    await Todo.findByIdAndUpdate(id, todo);
+    res
+      .status(200)
+      .json({ status: "success", data: "task updated succesfuly" });
   } catch (err) {
-    console.log(err);
+    res.status(404).json({ status: "failed", data: err });
   }
 });
 
@@ -80,12 +86,12 @@ app.put("/todos/:id", async (req, res) => {
 app.delete("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const deleteTodo = await pool.query("DELETE FROM todo WHERE tid = $1", [
-      id,
-    ]);
-    res.json("todo was deleted");
+    const deleteTodo = await Todo.findByIdAndDelete(id);
+    res
+      .status(200)
+      .json({ status: "success", data: "task deleted succesfuly" });
   } catch (err) {
-    console.log(err);
+    res.status(404).json({ status: "failed", data: err });
   }
 });
 
