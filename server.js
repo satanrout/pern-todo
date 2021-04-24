@@ -35,7 +35,7 @@ app.post("/todos", async (req, res) => {
     const newTodo = await new Todo({
       todo: todo,
     });
-    newTodo.save();
+    await newTodo.save();
     res.status(200).json({ status: "success", data: "added task successfuly" });
   } catch (err) {
     res.status(404).json({ status: "failed", data: err });
@@ -71,7 +71,6 @@ app.get("/todos/:id", async (req, res) => {
 
 app.put("/todos/:id", async (req, res) => {
   try {
-    const { editValue } = await req.body;
     await Todo.findByIdAndUpdate(req.params.id, req.body);
     res.status(200).json({ status: "success", data: "updated successfuly" });
   } catch (err) {

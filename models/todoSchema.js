@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const todoSchema = new Schema(
   {
     todo: { type: String, required: true, unique: true },
+    completed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
